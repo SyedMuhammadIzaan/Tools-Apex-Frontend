@@ -100,16 +100,16 @@ export default function HeroSection() {
       </div>
 
       {/* Featured Products Heading */}
-      <div className="bg-black text-white text-center py-8">
+      {/* <div className="bg-black text-white text-center py-8">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl lg:text-4xl font-bold">
             FEATURED <span className="text-yellow-400">PRODUCTS</span>
           </h2>
         </div>
-      </div>
+      </div> */}
 
       {/* Featured Products Strip */}
-      <div className="bg-gray-900 py-8">
+      {/* <div className="bg-gray-900 py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -135,7 +135,7 @@ export default function HeroSection() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </section>
   )
 }

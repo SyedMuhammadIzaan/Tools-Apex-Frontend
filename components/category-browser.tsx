@@ -26,7 +26,7 @@ export default function CategoryBrowser() {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12">BROWSE CATEGORIES FOR EVERY PURPOSE</h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
           {categories.map((category) => (
             <Link
               key={category.name}

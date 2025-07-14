@@ -23,49 +23,52 @@ export default function Header() {
     {
       name: "Top Categories",
       items: [
-        { name: "Land Mowers", href: "/new-products" },
-        { name: "Rotary Tillers", href: "/best-sellers" },
+        { name: "Land Mowers", href: "/collections/land-mowers" },
+        { name: "Rotary Tillers", href: "/collections/rotary-tillers" },
+        // { name: "Land Mowers", href: "/new-products" },
+        // { name: "Rotary Tillers", href: "/best-sellers" },
       ],
     },
+    // all dropdowns need to remove except top categories
     {
       name: "Our News",
-      items: [
-        { name: "Drills", href: "/collections/power-tools?filter=drills" },
-        { name: "Saws", href: "/collections/power-tools?filter=saws" },
-        { name: "Sanders", href: "/collections/power-tools?filter=sanders" },
-        { name: "Grinders", href: "/collections/power-tools?filter=grinders" },
-        { name: "Impact Drivers", href: "/collections/power-tools?filter=impact-drivers" },
-      ],
+      // items: [
+      //   { name: "Drills", href: "/collections/power-tools?filter=drills" },
+      //   { name: "Saws", href: "/collections/power-tools?filter=saws" },
+      //   { name: "Sanders", href: "/collections/power-tools?filter=sanders" },
+      //   { name: "Grinders", href: "/collections/power-tools?filter=grinders" },
+      //   { name: "Impact Drivers", href: "/collections/power-tools?filter=impact-drivers" },
+      // ],
     },
     {
       name: "Savings",
-      items: [
-        { name: "Lawn Mowers", href: "/collections/land-mowers" },
-        { name: "Trimmers", href: "/collections/outdoor-power?filter=trimmers" },
-        { name: "Blowers", href: "/collections/outdoor-power?filter=blowers" },
-        { name: "Chainsaws", href: "/collections/outdoor-power?filter=chainsaws" },
-        { name: "Hedge Trimmers", href: "/collections/outdoor-power?filter=hedge-trimmers" },
-      ],
+      // items: [
+      //   { name: "Lawn Mowers", href: "/collections/land-mowers" },
+      //   { name: "Trimmers", href: "/collections/outdoor-power?filter=trimmers" },
+      //   { name: "Blowers", href: "/collections/outdoor-power?filter=blowers" },
+      //   { name: "Chainsaws", href: "/collections/outdoor-power?filter=chainsaws" },
+      //   { name: "Hedge Trimmers", href: "/collections/outdoor-power?filter=hedge-trimmers" },
+      // ],
     },
     {
       name: "Top Selling Products",
-      items: [
-        { name: "Coolers", href: "/collections/recreation?filter=coolers" },
-        { name: "Speakers", href: "/collections/recreation?filter=speakers" },
-        { name: "Lighting", href: "/collections/recreation?filter=lighting" },
-        { name: "Inflatables", href: "/collections/recreation?filter=inflatables" },
-        { name: "Camping Gear", href: "/collections/recreation?filter=camping" },
-      ],
+      // items: [
+      //   { name: "Coolers", href: "/collections/recreation?filter=coolers" },
+      //   { name: "Speakers", href: "/collections/recreation?filter=speakers" },
+      //   { name: "Lighting", href: "/collections/recreation?filter=lighting" },
+      //   { name: "Inflatables", href: "/collections/recreation?filter=inflatables" },
+      //   { name: "Camping Gear", href: "/collections/recreation?filter=camping" },
+      // ],
     },
     {
       name: "Support",
-      items: [
-        { name: "Pressure Washers", href: "/collections/cleaning?filter=pressure-washers" },
-        { name: "Vacuums", href: "/collections/cleaning?filter=vacuums" },
-        { name: "Floor Care", href: "/collections/cleaning?filter=floor-care" },
-        { name: "Car Care", href: "/collections/cleaning?filter=car-care" },
-        { name: "Steam Cleaners", href: "/collections/cleaning?filter=steam-cleaners" },
-      ],
+      // items: [
+      //   { name: "Pressure Washers", href: "/collections/cleaning?filter=pressure-washers" },
+      //   { name: "Vacuums", href: "/collections/cleaning?filter=vacuums" },
+      //   { name: "Floor Care", href: "/collections/cleaning?filter=floor-care" },
+      //   { name: "Car Care", href: "/collections/cleaning?filter=car-care" },
+      //   { name: "Steam Cleaners", href: "/collections/cleaning?filter=steam-cleaners" },
+      // ],
     },
   ]
 
@@ -223,27 +226,66 @@ export default function Header() {
           <nav className="hidden lg:block border-t border-gray-800">
             <NavigationMenu className="max-w-none w-full">
               <NavigationMenuList className="flex justify-center space-x-8 py-4">
-                {categories.map((category) => (
+                {/* {categories.map((category) => (
                   <NavigationMenuItem key={category.name}>
                     <NavigationMenuTrigger className="text-white hover:text-yellow-400 bg-transparent">
                       {category.name}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid w-[400px] p-4 bg-black border border-gray-800">
-                        {category.items.map((item) => (
-                          <NavigationMenuLink key={item.name} asChild>
-                            <Link
-                              href={item.href}
-                              className="block p-2 text-white hover:text-yellow-400 hover:bg-gray-900 rounded"
-                            >
-                              {item.name}
-                            </Link>
-                          </NavigationMenuLink>
-                        ))}
+                        {category?.items?.map((item,index) => {
+                          console.log("Item", item);
+                          return (
+                            <NavigationMenuLink key={index} asChild>
+                              <Link
+                                href={item?.href}
+                                className="block p-2 text-white hover:text-yellow-400 hover:bg-gray-900 rounded"
+                              >
+                                {item?.name}
+                              </Link>
+                            </NavigationMenuLink>
+                          );
+                        })}
+
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuItem>
+                ))} */}
+                {categories.map((category) => (
+                  <NavigationMenuItem key={category.name}>
+                    {category.items ? (
+                      <>
+                        <NavigationMenuTrigger className="text-white hover:text-yellow-400 bg-transparent">
+                          {category.name}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <div className="grid w-[400px] p-4 bg-black border border-gray-800">
+                            {category.items.map((item, index) => (
+                              <NavigationMenuLink key={index} asChild>
+                                <Link
+                                  href={item.href}
+                                  className="block p-2 text-white hover:text-yellow-400 hover:bg-gray-900 rounded"
+                                >
+                                  {item.name}
+                                </Link>
+                              </NavigationMenuLink>
+                            ))}
+                          </div>
+                        </NavigationMenuContent>
+                      </>
+                    ) : (
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="#"
+                          className="text-white hover:text-yellow-400 bg-transparent px-4 py-2 block"
+                        >
+                          {category.name}
+                        </Link>
+                      </NavigationMenuLink>
+                    )}
+                  </NavigationMenuItem>
                 ))}
+
               </NavigationMenuList>
             </NavigationMenu>
           </nav>
