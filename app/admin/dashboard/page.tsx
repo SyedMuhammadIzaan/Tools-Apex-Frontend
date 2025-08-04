@@ -74,11 +74,11 @@ export default function AdminDashboard() {
               <p className="font-medium">Create Product</p>
             </a>
             <a
-              href="/admin/sales/create"
+              href="/admin/categories/create"
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Tag className="h-8 w-8 text-yellow-600 mb-2" />
-              <p className="font-medium">Create Sale</p>
+              <p className="font-medium">Add Categories</p>
             </a>
             <a
               href="/admin/reviews/create"

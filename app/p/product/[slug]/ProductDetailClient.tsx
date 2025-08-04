@@ -1,6 +1,6 @@
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { Star, Heart, Share2, ShoppingCart, Truck, Shield, RotateCcw, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -29,26 +29,26 @@ interface ProductDetailProps {
   product: Product
 }
 
-export default function ProductDetail({ productName }: ProductDetailProps) {
-  const [product, setProduct] = useState<Product | null>(null);
+export default function ProductDetailClient({ product }: ProductDetailProps) {
+//   const [product, setProduct] = useState<Product | null>(null);
   // console.log("Product Detail Page",productName)
   const [selectedImage,setSelectedImage]=useState(0);
   const [quantity,setQuantity]=useState(1);
   
-  useEffect(()=>{
-    const getSingleProduct=async (pName)=>{
-     try {
-        const productData=await getProductByName(pName)
-        console.log("SingleProduct",productData)
-        setSingleProductData(productData)
-     } catch (error) {
-      console.log("Product Not Found",error)
-     }
-    }
-    getProduct(productName)
-  },[])
-  const savings = product.originalPrice - product.price
-
+//   useEffect(()=>{
+//     const getSingleProduct=async (pName)=>{
+//      try {
+//         const productData=await getProductByName(pName)
+//         console.log("SingleProduct",productData)
+//         setProduct(productData)
+//      } catch (error) {
+//       console.log("Product Not Found",error)
+//      }
+//     }
+//     getProduct(productName)
+//   },[])
+  const savings = product.data.originalPrice - product.data.price
+    console.log("Product",product)
 
   return (
     <div className="bg-white text-black">
@@ -67,21 +67,21 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
           <div className="space-y-4">
             <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
               <Image
-                src={product.images[selectedImage] || "/placeholder.svg"}
-                alt={product.name}
+                src={product.data.images[selectedImage] || "/placeholder.svg"}
+                alt={product.data.name}
                 fill
                 className="object-cover"
                 priority
               />
-              {product.discount > 0 && (
+              {product.data.discount > 0 && (
                 <Badge className="absolute top-4 left-4 bg-red-600 text-white font-bold text-lg px-3 py-1">
-                  {product.discount}% OFF
+                  {product.data.discount}% OFF
                 </Badge>
               )}
             </div>
 
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
+              {product.data.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -91,7 +91,7 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
                 >
                   <Image
                     src={image || "/placeholder.svg"}
-                    alt={`${product.name} view ${index + 1}`}
+                    alt={`${product.data.name} view ${index + 1}`}
                     width={100}
                     height={100}
                     className="w-full h-full object-cover"
@@ -104,8 +104,8 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold mb-2">{product.name}</h1>
-              <p className="text-gray-600 mb-4">SKU: {product.sku}</p>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-2">{product.data.name}</h1>
+              <p className="text-gray-600 mb-4">SKU: {product.data.sku}</p>
 
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center">
@@ -113,34 +113,34 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                        i < Math.floor(product.data.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
                       }`}
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-600">
-                    {product.rating} ({product.reviewCount} reviews)
+                    {product.data.rating} ({product.data.reviewCount} reviews)
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
-                <span className="text-4xl font-bold text-green-600">${product.price}</span>
-                {product.originalPrice > product.price && (
+                <span className="text-4xl font-bold text-green-600">${product.data.price}</span>
+                {product.data.originalPrice > product.data.price && (
                   <>
-                    <span className="text-2xl text-gray-400 line-through">${product.originalPrice}</span>
+                    <span className="text-2xl text-gray-400 line-through">${product.data.originalPrice}</span>
                     <Badge className="bg-green-100 text-green-800">Save ${savings}</Badge>
                   </>
                 )}
               </div>
 
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">{product.description}</p>
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">{product.data.description}</p>
             </div>
 
             {/* Stock Status */}
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${product.inStock ? "bg-green-500" : "bg-red-500"}`} />
-              <span className={`font-semibold ${product.inStock ? "text-green-600" : "text-red-600"}`}>
-                {product.inStock ? "In Stock" : "Out of Stock"}
+              <div className={`w-3 h-3 rounded-full ${product.data.inStock ? "bg-green-500" : "bg-red-500"}`} />
+              <span className={`font-semibold ${product.data.inStock ? "text-green-600" : "text-red-600"}`}>
+                {product.data.inStock ? "In Stock" : "Out of Stock"}
               </span>
             </div>
 
@@ -166,10 +166,10 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
                 <Button
                   size="lg"
                   className="flex-1 bg-yellow-400 text-black hover:bg-yellow-500 font-semibold text-lg py-3"
-                  disabled={!product.inStock}
+                  disabled={!product.data.inStock}
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart - ${(product.price * quantity).toFixed(2)}
+                  Add to Cart - ${(product.data.price * quantity).toFixed(2)}
                 </Button>
                 <Button size="lg" variant="outline" className="border-gray-300">
                   <Heart className="mr-2 h-4 w-4" />
@@ -218,7 +218,7 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-2xl font-bold mb-6">Key Features</h3>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {product.features.map((feature, index) => (
+                  {product.data.features.map((feature, index) => (
                     <div key={index} className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0" />
                       <span className="text-gray-700">{feature}</span>
@@ -232,7 +232,7 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-2xl font-bold mb-6">Technical Specifications</h3>
                 <div className="grid md:grid-cols-2 gap-6">
-                  {Object.entries(product.specifications).map(([key, value]) => (
+                  {Object.entries(product.data.specification).map(([key, value]) => (
                     <div key={key} className="flex justify-between py-2 border-b border-gray-200">
                       <span className="font-semibold text-gray-700">{key}:</span>
                       <span className="text-gray-600">{value}</span>
@@ -246,7 +246,7 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-2xl font-bold mb-6">What&apos;s in the Box</h3>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {product.included.map((item, index) => (
+                  {product.data.included.map((item, index) => (
                     <div key={index} className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
                       <span className="text-gray-700">{item}</span>
@@ -317,18 +317,18 @@ export default function ProductDetail({ productName }: ProductDetailProps) {
               <div className="lg:w-1/3">
                 <h3 className="text-3xl font-bold mb-6">Customer Reviews</h3>
                 <div className="text-center mb-6">
-                  <div className="text-5xl font-bold text-yellow-600 mb-2">{product.rating}</div>
+                  <div className="text-5xl font-bold text-yellow-600 mb-2">{product.data.rating}</div>
                   <div className="flex justify-center mb-2">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={`h-6 w-6 ${
-                          i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                          i < Math.floor(product.data.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
                         }`}
                       />
                     ))}
                   </div>
-                  <p className="text-gray-600">Based on {product.reviewCount} reviews</p>
+                  <p className="text-gray-600">Based on {product.data.reviewCount} reviews</p>
                 </div>
 
                 {/* Rating Breakdown */}

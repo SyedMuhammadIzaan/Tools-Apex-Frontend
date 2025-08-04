@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button"
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Create Product", href: "/admin/products/create", icon: Package },
-  { name: "Create Sales Product", href: "/admin/sales/create", icon: Tag },
-  { name: "Create Reviews", href: "/admin/reviews/create", icon: Star },
-  { name: "Create Blogs", href: "/admin/blogs/create", icon: FileText },
+  { name: "Product", href: "/admin/products/", icon: Package },
+  { name: "Categories", href: "/admin/categories/", icon: Tag },
+  { name: "Reviews", href: "/admin/reviews/", icon: Star },
+  { name: "Blogs", href: "/admin/blogs/", icon: FileText },
   { name: "Manage Users", href: "/admin/users", icon: Users },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]

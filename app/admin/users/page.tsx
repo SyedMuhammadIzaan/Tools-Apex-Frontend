@@ -7,6 +7,7 @@ import { Eye, EyeOff, Lock, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
+import { login } from "@/services/auth.service"
 
 export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -17,19 +18,32 @@ export default function AdminLoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    
+    // Basic client-side validation
+    if (!email || !password) {
+      console.error("Please fill in all fields")
+      return
+    }
 
-    // Simulate login process
-    setTimeout(() => {
-      if (email === "admin@toolsapex.com" && password === "admin123") {
-        localStorage.setItem("adminAuth", "true")
-        router.push("/admin/dashboard")
-      } else {
-        alert("Invalid credentials. Use admin@toolsapex.com / admin123")
-      }
+    setIsLoading(true)
+    
+    try {
+      const credentials = { email, password }
+      const response = await login(credentials)
+      
+      // Handle successful login
+      localStorage.setItem("adminAuth", "true")
+      localStorage.setItem("token", response.token) // Store the JWT token
+      localStorage.setItem("user", JSON.stringify(response.user)) // Store user data
+      
+      router.push("/admin/dashboard")
+    } catch (error) {
+      console.error("Login failed:", error)
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
+
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">

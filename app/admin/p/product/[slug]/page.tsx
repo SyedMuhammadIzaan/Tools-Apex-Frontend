@@ -1,7 +1,11 @@
+// "use client"
 import ProductDetail from "@/components/product-detail"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { notFound } from "next/navigation"
+// import { useEffect, useState } from "react"
+import { Product } from "@/types"
+import { getProductByName } from "@/services/product.service"
 
 // Sample product data - in a real app, this would come from a database
 const products = {
@@ -169,28 +173,49 @@ const products = {
 }
 
 interface ProductPageProps {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params
+  const { slug } = params
+  const decodeSlug= decodeURIComponent(slug)
+  // console.log("Slug",decodeSlug)
+  const [singleProduct,setSingleProduct]=useState<Product[]>([]);
+
+  // useEffect(()=>{
+  //   const getSingleProduct=async (productName:string)=>{
+  //     const p=await getProductByName(productName);
+  //     setSingleProduct(p);
+  //   }
+  //   getSingleProduct(slug);
+  // },[])
+  // console.log("Single Product",singleProduct)
   const product = products[slug as keyof typeof products]
+  // console.log("Product Typeof",product)
 
-  if (!product) {
-    notFound()
-  }
+  try{
+    const product=await getProductByName(decodeSlug)
+    
+      if (!product) {
+        notFound()
+      }
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <ProductDetail product={product} />
-      <Footer />
+      
+      return (
+        <div className="min-h-screen bg-white">
+        <Header />
+        <ProductDetail product={singleProduct} />
+        <Footer />
     </div>
   )
+}catch(error){
+  console.error("Error fetching Product",error);
+  notFound()
+}
 }
 
 export async function generateStaticParams() {
-  return Object.keys(products).map((slug) => ({
+  return Object.keys(singleProduct).map((slug) => ({
     slug,
   }))
 }
