@@ -56,6 +56,7 @@ export interface Blog{
 	readTime:string;
 	href:string;
 	date:Date;
+	createdAt?:Date;
 }
 
 export interface Category{
@@ -67,14 +68,14 @@ export interface Category{
 export interface ProductColumnType<T=any> {
 	header: string;
 	id?:string;
-	accessor: string;
+	accessor: keyof Product;
 	cell: (value: T) => React.JSX.Element;
 }
 
 
 export interface CategoryColumnType<T=any>{
 	header:string;
-	accessor:string;
+	accessor:keyof Category;
 	cell:(value:T)=>React.JSX.Element;
 }
 
@@ -85,17 +86,22 @@ export interface Category {
 	products: string[];
 }
 
-
-
 export interface BlogColumnType<T=any>{
 	header:string;
-	accessor:string;
+	accessor:keyof Blog;
 	cell:(value:T)=>React.JSX.Element;
 }
 
 export interface Review {
 	_id: ID;
+	name:string;
 	rating: number;
 	date:Date;
 	comment: string;
+}
+
+export interface ReviewColumnType<T=any>{
+	header:string;
+	accessor:keyof Review;
+	cell:(value:T)=>React.JSX.Element;
 }

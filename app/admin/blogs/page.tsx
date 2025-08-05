@@ -8,7 +8,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { deleteBlogById, getAllBlogs } from '@/services/blog.service';
 const Blog = () => {
     const router = useRouter();
-    const [blogs,setBlogs]=useState<Blog[]>([]);
+    const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     const blogColumns: BlogColumnType[] = [
@@ -55,22 +55,22 @@ const Blog = () => {
             ),
         },
     ]
-    useEffect(()=>{
-        const fetchBlog=async()=>{
+    useEffect(() => {
+        const fetchBlog = async () => {
             try {
-                const response=await getAllBlogs();
+                const response = await getAllBlogs();
                 setBlogs(response)
             } catch (error) {
-                console.log("Error fetching Blog",error)
-            }finally{
-            setLoading(false)
-        }
+                console.log("Error fetching Blog", error)
+            } finally {
+                setLoading(false)
+            }
         }
         fetchBlog();
-    },[])
+    }, [])
     const handleClick = () => {
-    router.push("/admin/blogs/create")
-  }
+        router.push("/admin/blogs/create")
+    }
     const handleDelete = async (id: string) => {
         try {
             await deleteBlogById(id)
@@ -80,8 +80,8 @@ const Blog = () => {
         }
     }
     if (loading) {
-    return <div>Loading blogs...</div>
-  }
+        return <div>Loading blogs...</div>
+    }
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Blogs</h1>

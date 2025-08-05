@@ -11,6 +11,26 @@ import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
 import { Category, Product } from "@/types"
 
+const convertToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject("Conversion failed");
+      }
+    };
+
+    reader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 export default function UpdateProductPage() {
   const router = useRouter()
   const params = useParams()
@@ -22,13 +42,13 @@ export default function UpdateProductPage() {
     sku: string
     price: number
     originalPrice: number
-    discount:number
-    rating:number
-    reviewCount:number
-    inStock:boolean
+    discount: number
+    rating: number
+    reviewCount: number
+    inStock: boolean
     category: string
     features: string[]
-    included:string[]
+    included: string[]
     specification: Record<string, string>
     description: string
     mainImage: string
@@ -38,13 +58,13 @@ export default function UpdateProductPage() {
     sku: "",
     price: 0,
     originalPrice: 0,
-    discount:0,
-    rating:0,
-    reviewCount:0,
-    inStock:false,
+    discount: 0,
+    rating: 0,
+    reviewCount: 0,
+    inStock: false,
     category: "",
     features: [""],
-    included:[""],
+    included: [""],
     specification: {},
     description: "",
     mainImage: "",
@@ -64,13 +84,13 @@ export default function UpdateProductPage() {
         sku: product.sku || "",
         price: product.price || 0,
         originalPrice: product.originalPrice || 0,
-        discount:product.discount || 0,
-        rating:product.rating || 0,
-        reviewCount:product.reviewCount || 0,
-        inStock:product.inStock || false,
+        discount: product.discount || 0,
+        rating: product.rating || 0,
+        reviewCount: product.reviewCount || 0,
+        inStock: product.inStock || false,
         category: product.category?._id || "",
         features: product.features || [""],
-        included:product.included || [""],
+        included: product.included || [""],
         specification: product.specification || {},
         description: product.description || "",
         mainImage: product.mainImage || "",
@@ -113,24 +133,71 @@ export default function UpdateProductPage() {
     }))
   }
 
-  const handleMainImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setFormData(prev => ({ ...prev, mainImage: imageUrl }))
+  const handleMainImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      let base64Image: string = "";
+
+      for (let i = 0; i < e.target.files.length; i++) {
+        try {
+          const base64 = await convertToBase64(e.target.files[i]);
+          base64Image = base64;
+        } catch (error) {
+          console.error("Image conversion failed:", error);
+        }
+      }
+      // setMainImage(base64Image)
+      setFormData(prev => ({ ...prev, mainImage: base64Image }))
     }
   }
 
-  const handleImagesUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    const imageUrls = files.map(file => URL.createObjectURL(file))
-    setFormData(prev => ({ ...prev, images: [...prev.images, ...imageUrls] }))
-  }
+  const handleImagesUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const base64Array: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const base64 = await convertToBase64(files[i]);
+          base64Array.push(base64);
+        } catch (error) {
+          console.error("Image conversion failed:", error);
+        }
+      }
 
-  const handleUpdate = async (productId,formData) => {
+      // ✅ Push actual images, not an empty string
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, ...base64Array],
+      }));
+    }
+  };
+
+
+  const handleUpdate = async (productId: string, formData: any) => {
     await updateProductById(productId, formData)
     router.push("/admin/products")
   }
+  const handleDeleteImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleReplaceImage = async (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    if (e.target.files && e.target.files.length > 0) {
+      try {
+        const base64 = await convertToBase64(e.target.files[0]);
+        const updatedImages = [...formData.images];
+        updatedImages[index] = base64;
+        setFormData(prev => ({
+          ...prev,
+          images: updatedImages,
+        }));
+      } catch (error) {
+        console.error("Image replacement failed:", error);
+      }
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
@@ -194,14 +261,36 @@ export default function UpdateProductPage() {
       <div>
         <label className="block font-semibold">Additional Images:</label>
         <Input type="file" accept="image/*" multiple onChange={handleImagesUpload} />
-        <div className="flex flex-wrap gap-2 mt-2">
+
+        <div className="flex flex-wrap gap-4 mt-2">
           {formData.images.map((img, i) => (
-            <Image key={i} src={img} alt={`Image ${i}`} width={100} height={100} />
+            <div key={i} className="relative w-[100px] h-[100px] border rounded">
+              <Image src={img} alt={`Image ${i}`} layout="fill" objectFit="cover" className="rounded" />
+
+              {/* Replace Image Button */}
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleReplaceImage(e, i)}
+                className="absolute top-0 left-0 opacity-0 w-full h-full cursor-pointer"
+                title="Click to replace image"
+              />
+
+              {/* Delete Button */}
+              <button
+                type="button"
+                onClick={() => handleDeleteImage(i)}
+                className="absolute top-0 right-0 bg-red-500 text-white px-1 text-xs rounded-bl"
+              >
+                ✕
+              </button>
+            </div>
           ))}
         </div>
       </div>
 
-      <Button onClick={()=>{handleUpdate(productId,formData)}}>Update Product</Button>
+
+      <Button onClick={() => { handleUpdate(productId, formData) }}>Update Product</Button>
     </div>
   )
 }

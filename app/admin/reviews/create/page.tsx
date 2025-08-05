@@ -1,21 +1,61 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Star } from "lucide-react"
+import { createReview } from "@/services/review.service"
+import { getAllProducts } from "@/services/product.service"
+import { Product } from "@/types"
 
 export default function CreateReviewPage() {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
+  const [selectedProduct, setSelectedProduct] = useState<string>("")
+  const [products, setProducts] = useState<Product[]>([])
+  const [reviewStatus, setReviewStatus] = useState<string>("approved")
+  const [name, setName] = useState("")
+  const [comment, setComment] = useState("")
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const { data } = await getAllProducts()
+        setProducts(data)
+      } catch (error) {
+        console.log("Error fetching products", error)
+      }
+    }
+    fetchAllProducts()
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert("Review created successfully!")
+    try {
+      await createReview({
+        name,
+        rating,
+        comment,
+        date: new Date(date),
+      })
+      alert("Review created successfully!")
+      setName("")
+      setComment("")
+      setRating(0)
+      setSelectedProduct("")
+      setDate(new Date().toISOString().split("T")[0])
+    } catch (error) {
+      console.error("Failed to create review", error)
+    }
   }
 
   return (
@@ -31,23 +71,24 @@ export default function CreateReviewPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">Product *</label>
-              <Select>
+              <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select product" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="drill-kit">18V Cordless Drill Kit</SelectItem>
-                  <SelectItem value="chainsaw">40V Brushless Chainsaw</SelectItem>
-                  <SelectItem value="circular-saw">18V Circular Saw</SelectItem>
-                  <SelectItem value="combo-kit">ONE+ 6-Tool Combo Kit</SelectItem>
+                  {products.map((product) => (
+                    <SelectItem key={product._id} value={product._id}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Review Status</label>
-              <Select defaultValue="approved">
+              <Select value={reviewStatus} onValueChange={setReviewStatus}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">Pending</SelectItem>
@@ -64,19 +105,13 @@ export default function CreateReviewPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">Customer Name *</label>
-              <Input placeholder="e.g., John D." required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Customer Email</label>
-              <Input type="email" placeholder="john@example.com" />
-            </div>
-          </div>
-          <div className="mt-6">
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="verified" className="rounded" />
-              <label htmlFor="verified" className="text-sm font-medium">
-                Verified Purchase
-              </label>
+              <Input
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., John D."
+                required
+              />
             </div>
           </div>
         </div>
@@ -98,58 +133,41 @@ export default function CreateReviewPage() {
                   >
                     <Star
                       className={`h-8 w-8 ${
-                        star <= (hoveredRating || rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                        star <= (hoveredRating || rating)
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
                       }`}
                     />
                   </button>
                 ))}
                 <span className="ml-2 text-sm text-gray-600">
-                  {rating > 0 ? `${rating} star${rating > 1 ? "s" : ""}` : "Select rating"}
+                  {rating > 0
+                    ? `${rating} star${rating > 1 ? "s" : ""}`
+                    : "Select rating"}
                 </span>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Review Title *</label>
-              <Input placeholder="e.g., Excellent drill for the price!" required />
-            </div>
-
-            <div>
               <label className="block text-sm font-medium mb-2">Review Content *</label>
-              <Textarea placeholder="Write the detailed review content..." rows={6} required />
+              <Textarea
+                name="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Write the detailed review content..."
+                rows={6}
+                required
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Review Date</label>
-              <Input type="date" defaultValue={new Date().toISOString().split("T")[0]} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold mb-4">Additional Information</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">Helpful Votes</label>
-              <Input type="number" placeholder="0" min="0" defaultValue="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Purchase Date</label>
-              <Input type="date" />
-            </div>
-          </div>
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="featured-review" className="rounded" />
-              <label htmlFor="featured-review" className="text-sm font-medium">
-                Feature this review
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="send-notification" className="rounded" />
-              <label htmlFor="send-notification" className="text-sm font-medium">
-                Send notification to customer
-              </label>
+              <Input
+                name="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -158,7 +176,10 @@ export default function CreateReviewPage() {
           <Button type="button" variant="outline">
             Save as Draft
           </Button>
-          <Button type="submit" className="bg-yellow-400 text-black hover:bg-yellow-500">
+          <Button
+            type="submit"
+            className="bg-yellow-400 text-black hover:bg-yellow-500"
+          >
             Create Review
           </Button>
         </div>

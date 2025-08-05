@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { getAllCategories } from "@/services/category.service";
 import { Category } from "@/types";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -178,7 +178,7 @@ const UpdateBlog = () => {
                     )}
                 </div>
 
-                <Button className="mt-6 bg-yellow-400 hover:bg-yellow-500 text-black" onClick={handleSubmit}>
+                <Button className="bg-blue-700 hover:bg-blue-800" onClick={handleSubmit}>
                     Update Blog
                 </Button>
             </div>
