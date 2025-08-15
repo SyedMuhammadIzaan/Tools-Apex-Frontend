@@ -1,30 +1,36 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface InitialStatePropertyType {
-	cart: string[];
+interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
 }
 
-const initialState: InitialStatePropertyType = {
-	cart = [],
-};
+interface InitialStatePropertyType {
+  cart: CartItem[];
+}
+
+const initialState:InitialStatePropertyType={
+    cart:[],
+}
 
 export const cartSlice = createSlice({
 	name: "cart",
 	initialState,
 	reducers: {
-		addToCart: (state, action) => {
+		addToCart: (state, action: PayloadAction<CartItem>) => {
 			state.cart.push(action.payload);
 		},
-		updateCartItem: (state, action) => {
-			const id = state.cart.find((item) => {
-				item._id === action.payload._id;
-			});
-			if (id) Object.assign(id, action.payload);
+		updateCartItem: (state, action: PayloadAction<CartItem>) => {
+			const itemToUpdate = state.cart.find(
+				(item) => item._id === action.payload._id
+			);
+
+			if (itemToUpdate) Object.assign(itemToUpdate, action.payload);
 		},
-		deleteCartItem: (state, action) => {
-			state.cart = state.cart.filter((items) => {
-				items._id !== action.payload;
-			});
+		deleteCartItem: (state, action:PayloadAction<string>) => {
+			state.cart = state.cart.filter((item) => item._id !== action.payload);
 		},
 		removeAll: (state) => {
 			state.cart = [];
@@ -32,5 +38,6 @@ export const cartSlice = createSlice({
 	},
 });
 
-export const {addToCart,updateCartItem,deleteCartItem,removeAll}=cartSlice.actions;
+export const { addToCart, updateCartItem, deleteCartItem, removeAll } =
+	cartSlice.actions;
 export default cartSlice.reducer;
